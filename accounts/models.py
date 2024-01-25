@@ -1,4 +1,49 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import BaseUserManager
+
+
+
+class UserProfileManager(BaseUserManager):
+    """ Manager for user profiles """
+    def create_user(self, email, name, password=None):
+        """ Create a new user profile """
+        if not email:
+            raise ValueError('User must have an email address')
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, name=name)
+
+        user.set_password(password)
+        user.save(using=self._db)
+
+        return user
+
+    def create_superuser(self, email, name, password):
+        """ Create a new superuser profile """
+        user = self.create_user(email,name, password)
+        user.is_superuser = True
+        user.is_staff = True
+
+        user.save(using=self._db)
+
+        return user
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+    """ Database model for users in the system """
+    email = models.EmailField(max_length=255, unique=True)
+    full_name = models.CharField(max_length=255)
+
+    objects = UserProfileManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['full_name']
+
+    def __str__(self):
+        """ Return string representation of our user """
+        return self.email
 
 
 class Cart(models.Model):
@@ -10,7 +55,6 @@ class Cart(models.Model):
 
 
     class Meta:
-        #managed = False
         db_table = 'cart'
 
 class Complaint(models.Model):
@@ -22,7 +66,6 @@ class Complaint(models.Model):
     updated_at = models.DateTimeField(db_column='updated_At', blank=True, null=True)
 
     class Meta:
-        #managed = False
         db_table = 'complaint'
 
 
@@ -34,7 +77,6 @@ class ComplaintComment(models.Model):
     updated_at = models.DateTimeField(db_column='updated_At', blank=True,  null=True)
 
     class Meta:
-        #managed = False
         db_table = 'complaint_comment'
 
 
@@ -54,15 +96,13 @@ class Favourite(models.Model):
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        #managed = False
         db_table = 'favourite'
 
 
 class Images(models.Model):
-    url = models.CharField(blank=True, null=True)
+    url = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
-        #managed = False
         db_table = 'images'
 
     
@@ -71,7 +111,6 @@ class NotificationConfirmation(models.Model):
     status = models.TextField(blank=True, null=True)  # This field type is a guess.
 
     class Meta:
-        #managed = False
         db_table = 'notification_confirmation'
 
 
@@ -84,7 +123,6 @@ class NotificationSetting(models.Model):
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        #managed = False
         db_table = 'notification_setting'
 
     
@@ -100,7 +138,6 @@ class Order(models.Model):
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     class Meta:
-        #managed = False
         db_table = 'order'
 
 
@@ -115,8 +152,7 @@ class OrderItems(models.Model):
     status = models.TextField(blank=True, null=True) 
 
     class Meta:
-        managed = False
-        db_table = 'order'
+        db_table = 'order_items'
 
 
 class Product(models.Model):
@@ -138,7 +174,6 @@ class Product(models.Model):
     sub_category = models.ForeignKey('ProductSubCategory', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'product'
 
 
@@ -148,7 +183,6 @@ class ProductCategory(models.Model):
     created_at = models.DateTimeField(db_column='create_At', blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'product_category'
 
 class ProductSubCategory(models.Model):
@@ -157,29 +191,34 @@ class ProductSubCategory(models.Model):
     createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'product_sub_category'
 
 
 
+# class ProductReview(models.Model):
+#     product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
+#     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+#     comment = models.TextField(blank=True, null=True)
+#     reply = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
+#     createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)
+
+#     class Meta:
+#         db_table = 'product_review'
+
 class ProductReview(models.Model):
-    product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
+    product = models.ForeignKey('Product', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     reply = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
     createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'product_review'
-
-
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
     url = models.CharField(max_length=255)
 
     class Meta:
-        managed = False
         db_table = 'product_image'
 
 
@@ -190,7 +229,6 @@ class PromoProduct(models.Model):
     createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'promo_product'
 
 class Promotion(models.Model):
@@ -208,55 +246,51 @@ class Promotion(models.Model):
     updatedat = models.DateTimeField(db_column='updatedAt', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'promotion'
 
 
 class Role(models.Model):
     name = models.CharField(max_length=225, blank=True, null=True)
-
     class Meta:
-        managed = False
         db_table = 'role'
 
     
-class User(models.Model):
-    id = models.UUIDField(primary_key=True)
-    username = models.CharField(max_length=255, blank=True, null=True)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    email = models.CharField(max_length=255)
-    role = models.ForeignKey(Role, models.DO_NOTHING, blank=True, null=True)
-    section_order = models.TextField(blank=True, null=True)
-    password = models.CharField(max_length=255, blank=True, null=True)
-    provider = models.CharField(max_length=255, blank=True, null=True)
-    phone_number = models.CharField(max_length=255, blank=True, null=True)
-    is_verified = models.BooleanField(blank=True, null=True)
-    two_factor_auth = models.BooleanField(blank=True, null=True)
-    location = models.CharField(max_length=255, blank=True, null=True)
-    country = models.CharField(max_length=255, blank=True, null=True)
-    profile_pic = models.TextField(blank=True, null=True)
-    profile_cover_photo = models.TextField(blank=True, null=True)
-    createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)  # Field name made lowercase.
-    last_login = models.DateTimeField(blank=True, null=True)
-    refresh_token = models.TextField(blank=True, null=True)
-    is_seller = models.BooleanField(blank=True, null=True)
-    slug = models.CharField(max_length=255, blank=True, null=True)
-    two_fa_code = models.CharField(blank=True, null=True)
 
-    class Meta:
-        managed = False
-        db_table = 'user'
 
+# class User(models.Model):
+#     id = models.UUIDField(primary_key=True)
+#     username = models.CharField(max_length=255, blank=True, null=True)
+#     first_name = models.CharField(max_length=255)
+#     last_name = models.CharField(max_length=255)
+#     email = models.CharField(max_length=255)
+#     role = models.ForeignKey(Role, models.DO_NOTHING, blank=True, null=True)
+#     section_order = models.TextField(blank=True, null=True)
+#     password = models.CharField(max_length=255, blank=True, null=True)
+#     provider = models.CharField(max_length=255, blank=True, null=True)
+#     phone_number = models.CharField(max_length=255, blank=True, null=True)
+#     is_verified = models.BooleanField(blank=True, null=True)
+#     two_factor_auth = models.BooleanField(blank=True, null=True)
+#     location = models.CharField(max_length=255, blank=True, null=True)
+#     country = models.CharField(max_length=255, blank=True, null=True)
+#     profile_pic = models.TextField(blank=True, null=True)
+#     profile_cover_photo = models.TextField(blank=True, null=True)
+#     createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)
+#     last_login = models.DateTimeField(blank=True, null=True)
+#     refresh_token = models.TextField(blank=True, null=True)
+#     is_seller = models.BooleanField(blank=True, null=True)
+#     slug = models.CharField(max_length=255, blank=True, null=True)
+#     two_fa_code = models.CharField(blank=True, null=True)
+
+#     class Meta:
+#         db_table = 'user'
+        
 
 
 class UserProductRating(models.Model):
     user_id = models.UUIDField(blank=True, null=True)
     product_id = models.UUIDField(blank=True, null=True)
     rating = models.IntegerField(blank=True, null=True)
-
     class Meta:
-        managed = False
         db_table = 'user_product_rating'
 
 
@@ -267,5 +301,4 @@ class Wishlist(models.Model):
     updatedat = models.DateTimeField(db_column='updatedAt', blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'wishlist'

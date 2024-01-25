@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
-#from search import search_views
+from products.views import ProductListCreateAPIView, ProductDetailAPIViews
+from search.views import SearchView
+# from search import SearchView
 
 
 
@@ -11,5 +13,4 @@ urlpatterns = [
 	path('', views.user_detail, name='user_detail'),
 	path('<int:pk>/update/', views.user_update_viewset, name='user_update'),
 	path('change-password/', views.change_password, name='change_password'),
-    #path('search/', views.search_views, name=search_views),
 ]
