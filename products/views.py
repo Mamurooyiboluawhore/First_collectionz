@@ -21,10 +21,20 @@ class ProductListCreateAPIView(APIView):
             serializer = ProductSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                response = {
+                    "message": "Product added successfully",
+                    "status_code": 201,
+                    "data" : serializer.data
+                }
+                return Response(response, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            response= {
+                "message": "internal server error",
+                "status_code": 500,
+                "data": {'detail': str(e)},
+            }
+            return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ProductDetailAPIViews(APIView):
@@ -32,7 +42,7 @@ class ProductDetailAPIViews(APIView):
         try:
             return Product.objects.get(pk=pk)
         except Product.DoesNotExist:
-            raise Http404
+            return get_object_or_404(Product, pk=pk)
     
     def get(self, request, pk, format=None):
         product = self.get_object(pk)
@@ -44,7 +54,12 @@ class ProductDetailAPIViews(APIView):
         serializer = ProductSerializer(product, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            response = {
+                "message": "Product successfully updated",
+                "status_code": 200,
+                "data": serializer.data
+            }
+            return Response(response, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
