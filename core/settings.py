@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
+    'category',
+    'products',
+    'search',
     'rest_framework',
     'rest_framework_simplejwt',
     "corsheaders",
@@ -95,7 +98,7 @@ DATABASES = {
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
-        'PORT': int(os.getenv('DB_PORT')),
+        'PORT': int(os.getenv('DB_PORT', 5432)),
     }
 }
 
@@ -164,3 +167,5 @@ EMAIL_PORT = os.getenv('EMAIL_PORT')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+AUTH_USER_MODEL = 'accounts.User'
