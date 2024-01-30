@@ -163,7 +163,7 @@ class Product(models.Model):
     category = models.ForeignKey('ProductCategory', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     price = models.DecimalField(max_digits=15, decimal_places=2)
-    discount_price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     admin_status = models.TextField(blank=True, null=True)
     is_deleted = models.TextField(blank=True, null=True)
     rating = models.ForeignKey('UserProductRating', models.DO_NOTHING, blank=True, null=True)
