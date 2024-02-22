@@ -23,10 +23,7 @@ urlpatterns = [
     path('api/accounts/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('category/', include('category.urls') ),
     path('products/', include('products.urls')),
-    # path('api/products/', ProductListCreateAPIView.as_view(), name='product-list-create'),
-    # path('api/products/<uuid:pk>/', ProductDetailAPIViews.as_view(), name='product-detail'),
-    # path('api/products/<uuid:pk>/details/', ProductDetailAPIViews.as_view(), name='product-details'),
-    # path('products/<uuid:pk>/delete/', ProductDetailAPIViews.as_view(), name='product-delete'),
-    path('search/', SearchView.as_view(), name='search_views'),
+    path('search/', include('search.urls')),
+    path('sort/', include('sort.urls')),
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0),name='schema-swagger-ui'),
 ]
