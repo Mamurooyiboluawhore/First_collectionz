@@ -2,7 +2,7 @@ from django.urls import path
 from .views import SortViewApi
 
 
-ulrpatterns = [
+urlpatterns = [
     path(' ', SortViewApi.as_view(), name='sort-products')
 
 ]
