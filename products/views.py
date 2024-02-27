@@ -44,6 +44,7 @@ class ProductDetailAPIViews(APIView):
         except Product.DoesNotExist:
             return get_object_or_404(Product, pk=pk)
     
+    
     def get(self, request, pk, format=None):
         product = self.get_object(pk)
         serializer = ProductSerializer(product)
