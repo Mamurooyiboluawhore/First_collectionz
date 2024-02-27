@@ -23,6 +23,7 @@ urlpatterns = [
     path('api/accounts/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('category/', include('category.urls') ),
     path('products/', include('products.urls')),
+    path('reviews/', include('reviews.urls')),
     path('search/', include('search.urls')),
     path('sort/', include('sort.urls')),
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0),name='schema-swagger-ui'),

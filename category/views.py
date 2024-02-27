@@ -20,7 +20,7 @@ class CategoryCreateAPIView(APIView):
             'status_code': 200,
             'data': serializer.data
          }
-         return Response(response, status=status.HTTP_200_SUCCESS)
+         return Response(response, status=status.HTTP_200_OK)
       except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
       

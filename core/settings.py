@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'wishlist',
     'rest_framework',
     'rest_framework_simplejwt',
+    'reviews',
     "corsheaders",
     'rest_framework_swagger',
     'drf_yasg',

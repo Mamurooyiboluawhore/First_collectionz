@@ -25,15 +25,16 @@ class ProductReviewList(APIView):
             product_reviews = ProductReview.objects.all()
             serializer = ProductReviewSerializer(product_reviews, many=True)
             data = {
-                "product_reviews": serializer.data
+                "product_reviews": serializer.data,
+                "message": "List of Product Reviews",
             }
-            return Response(data, "List of Product Reviews", status.HTTP_200_OK, "success")
+            return Response(data, status.HTTP_200_OK)
 
         except Exception as e:
             data = {
                 "error_message": f"An error occurred while retrieving product reviews: {str(e)}",
             }
-            return Response(data, "Internal server error", status.HTTP_500_INTERNAL_SERVER_ERROR, "error")
+            return Response(data, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ProductReviewDetail(APIView):
