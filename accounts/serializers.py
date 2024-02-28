@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
 		fields = ['pk', 'full_name', 'email']
-		extra_kwargs = {'pk': {'read_only': True}}
+		#extra_kwargs = {'pk': {'read_only': True}}
 
 
 class ChangePasswordSerializer(serializers.Serializer):
