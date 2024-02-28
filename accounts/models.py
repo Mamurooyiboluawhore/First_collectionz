@@ -105,7 +105,7 @@ class Images(models.Model):
     class Meta:
         db_table = 'images'
 
-    
+
 class NotificationConfirmation(models.Model):
     mail_id = models.IntegerField(blank=True, null=True)
     status = models.TextField(blank=True, null=True)  # This field type is a guess.
@@ -125,7 +125,6 @@ class NotificationSetting(models.Model):
     class Meta:
         db_table = 'notification_setting'
 
-    
 
 class Order(models.Model):
     id = models.UUIDField(primary_key=True)
@@ -254,7 +253,6 @@ class Role(models.Model):
     class Meta:
         db_table = 'role'
 
-    
 
 
 # class User(models.Model):

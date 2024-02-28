@@ -1,16 +1,21 @@
-from django.views import View
-from django.http import JsonResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from accounts.models import Product
+from products.serializers import ProductSerializer
 
+class SearchView(APIView):
+    serializer_class = ProductSerializer  # Use serializer_class instead of serializer
 
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('q', '')
+        products = Product.objects.filter(name__icontains=query).order_by('-createdat')
 
-class SearchView(View):
-    def search_views(self, request, *args, **kwargs):
-        query = request.GET.get('q')
-        products = Product.objects.filter(title__icontain=query, description__icontain=query).order_by('-date')
+        # Use serializer_class to instantiate the serializer
+        serializer = self.serializer_class(products, many=True, context={'request': request})
 
         context = {
-            "products": products,
+            "products": serializer.data,
             "query": query
         }
-        return JsonResponse(context)
+        return Response(context, status=status.HTTP_200_OK)

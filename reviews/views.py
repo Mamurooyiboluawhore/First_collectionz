@@ -53,7 +53,7 @@ class ProductReviewDetail(APIView):
         data = request.data
         data['user'] = request.user
 
-        serializer = ProductReviewSerializer(data=data)
+        serializer = ProductReviewSerializer(data=data,  context={'request': request})
         try:
             if serializer.is_valid():
                 serializer.save()
