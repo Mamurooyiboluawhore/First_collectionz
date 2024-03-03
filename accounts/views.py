@@ -50,7 +50,7 @@ class ValidateOTP(APIView):
             return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
         if user.otp == otp:
-            user.otp = None  # Reset the OTP field after successful validation
+            user.otp = None
             user.save()
 
             # Authenticate the user and create or get an authentication token
@@ -60,7 +60,7 @@ class ValidateOTP(APIView):
         else:
             return Response({'error': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
 		
-		
+
 class UserCreateAPIView(generics.CreateAPIView):
 	queryset = User.objects.all()
 	serializer_class = RegisterUserSerializer
@@ -86,9 +86,14 @@ class UserCreateAPIView(generics.CreateAPIView):
 				}
 			}, status=status.HTTP_201_CREATED)
 		except Exception as e:
-			return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+			if isinstance(e.detail, dict) and 'email' in e.detail and 'unique' in e.detail['email']:
+				return Response({'error': 'User with this email already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+			else:
+				return Response({'error': e.detail}, status=status.HTTP_400_BAD_REQUEST)
 
+	
 user_create = UserCreateAPIView.as_view()
+
 
 class UserViewSet(viewsets.ModelViewSet):
 	queryset = User.objects.all()
