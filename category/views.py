@@ -75,6 +75,6 @@ class CategoryDetailAPIViews(APIView):
         try:
             product = get_object_or_404(ProductCategory, pk=pk)
             product.delete()
-            return JsonResponse({'message': 'catw deleted successfully.'})
+            return Response({'message': 'category deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)

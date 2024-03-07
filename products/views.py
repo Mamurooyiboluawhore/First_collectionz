@@ -68,6 +68,6 @@ class ProductDetailAPIViews(APIView):
         try:
             product = get_object_or_404(Product, pk=pk)
             product.delete()
-            return JsonResponse({'message': 'Product deleted successfully.'})
+            return Response({'message': 'Product deleted successfully.'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
