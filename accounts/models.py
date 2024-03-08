@@ -53,8 +53,8 @@ class Cart(models.Model):
     id = models.UUIDField(primary_key=True)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     product = models.ForeignKey("Product", models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField(db_column='created_At', blank=True, null=True)
-    updated_at = models.DateTimeField(db_column='updated_At', blank=True, null=True)
+    created_at = models.DateTimeField(db_column='created_At', auto_now_add=True)
+    updated_at = models.DateTimeField(db_column='updated_At',  auto_now_add=True)
 
 
     class Meta:

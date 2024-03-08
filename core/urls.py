@@ -23,6 +23,7 @@ urlpatterns = [
     path('api/accounts/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('category/', include('category.urls')),
     # path('payment/', include('payment.urls')),
+    path('coupon/', include('coupon.urls')),
     path('products/', include('products.urls')),
     path('reviews/', include('reviews.urls')),
     path('search/', include('search.urls')),
