@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
+from django.utils import timezone
+import uuid
 
 
 
@@ -51,8 +53,8 @@ class Cart(models.Model):
     id = models.UUIDField(primary_key=True)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     product = models.ForeignKey("Product", models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField(db_column='created_At', blank=True, null=True)
-    updated_at = models.DateTimeField(db_column='updated_At', blank=True, null=True)
+    created_at = models.DateTimeField(db_column='created_At', auto_now_add=True)
+    updated_at = models.DateTimeField(db_column='updated_At',  auto_now_add=True)
 
 
     class Meta:
@@ -153,6 +155,16 @@ class OrderItems(models.Model):
 
     class Meta:
         db_table = 'order_items'
+
+
+class Payment(models.Model):
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.CharField(max_length=50)
+    paid = models.BooleanField(default=False)
+    user =  models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'payment'
 
 
 class Product(models.Model):
@@ -294,10 +306,11 @@ class UserProductRating(models.Model):
 
 
 class Wishlist(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
-    createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)
-    updatedat = models.DateTimeField(db_column='updatedAt', blank=True, null=True)
+    createdat = models.DateTimeField(db_column='createdAt', default=timezone.now, blank=True, null=True)
+    updatedat = models.DateTimeField(db_column='updatedAt', default=timezone.now, blank=True, null=True)
 
     class Meta:
         db_table = 'wishlist'

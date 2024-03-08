@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -75,6 +74,6 @@ class CategoryDetailAPIViews(APIView):
         try:
             product = get_object_or_404(ProductCategory, pk=pk)
             product.delete()
-            return JsonResponse({'message': 'catw deleted successfully.'})
+            return Response({'message': 'category deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
