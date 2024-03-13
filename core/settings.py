@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +46,8 @@ INSTALLED_APPS = [
     'accounts',
     'category',
     'cart',
+    'channels',
+    'chatApp',
     'coupon',
     'payment',
     'products',
@@ -91,7 +94,9 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'core.wsgi.application'
+
 
 
 # Database
@@ -177,3 +182,16 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 CORS_ALLOW_ALL_ORIGINS = True
 
 AUTH_USER_MODEL = 'accounts.User'
+
+
+ASGI_APPLICATION = 'core.asgi.application'
+# Channels
+ASGI_APPLICATION = "core.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
