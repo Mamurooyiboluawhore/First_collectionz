@@ -9,24 +9,25 @@ import uuid
 
 class UserProfileManager(BaseUserManager):
     """ Manager for user profiles """
-    def create_user(self, email, name, password=None):
+    def create_user(self, email, password=None):
         """ Create a new user profile """
         if not email:
             raise ValueError('User must have an email address')
 
         email = self.normalize_email(email)
-        user = self.model(email=email, name=name)
+        user = self.model(email=email)
 
         user.set_password(password)
         user.save(using=self._db)
 
         return user
 
-    def create_superuser(self, email, name, password):
+    def create_superuser(self, email, password):
         """ Create a new superuser profile """
-        user = self.create_user(email,name, password)
+        user = self.create_user(email, password)
         user.is_superuser = True
         user.is_staff = True
+
 
         user.save(using=self._db)
 
@@ -36,13 +37,12 @@ class UserProfileManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     """ Database model for users in the system """
     email = models.EmailField(max_length=255, unique=True)
-    full_name = models.CharField(max_length=255)
     otp = models.CharField(max_length=6, null=True, blank=True)
 
     objects = UserProfileManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['full_name']
+    
 
     def __str__(self):
         """ Return string representation of our user """
@@ -184,6 +184,7 @@ class Product(models.Model):
     createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)
     updatedat = models.DateTimeField(db_column='updatedAt', blank=True, null=True)
     sub_category = models.ForeignKey('ProductSubCategory', models.DO_NOTHING, blank=True, null=True)
+    image = models.ImageField(upload_to='product_images/', null=False, blank=True)
 
     class Meta:
         db_table = 'product'
@@ -206,17 +207,6 @@ class ProductSubCategory(models.Model):
         db_table = 'product_sub_category'
 
 
-
-# class ProductReview(models.Model):
-#     product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
-#     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-#     comment = models.TextField(blank=True, null=True)
-#     reply = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
-#     createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)
-
-#     class Meta:
-#         db_table = 'product_review'
-
 class ProductReview(models.Model):
     product = models.ForeignKey('Product', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
@@ -226,12 +216,7 @@ class ProductReview(models.Model):
 
     class Meta:
         db_table = 'product_review'
-class ProductImage(models.Model):
-    product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
-    url = models.CharField(max_length=255)
 
-    class Meta:
-        db_table = 'product_image'
 
 
 class PromoProduct(models.Model):
