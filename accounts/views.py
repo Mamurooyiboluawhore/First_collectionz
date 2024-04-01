@@ -19,26 +19,8 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import authenticate
 
+
 User = get_user_model()
-
-
-
-# class LoginWithOTP(APIView):
-# 	def post(self, request):
-# 		email = request.data.get('email', '')
-# 		try:
-# 			user = User.objects.get(email=email)
-# 		except User.DoesNotExist:
-# 			return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
-		
-# 		otp = generate_otp()
-# 		user.otp = otp
-# 		user.save()
-
-# 		send_otp_email(email, otp)
-
-# 		return Response({'message': 'OTP has been sent to your email.'}, status=status.HTTP_200_OK)
-	
 
 
 class ValidateOTP(APIView):

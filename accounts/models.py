@@ -9,25 +9,24 @@ import uuid
 
 class UserProfileManager(BaseUserManager):
     """ Manager for user profiles """
-    def create_user(self, email, password=None):
+    def create_user(self, email, full_name, password=None):
         """ Create a new user profile """
         if not email:
             raise ValueError('User must have an email address')
 
         email = self.normalize_email(email)
-        user = self.model(email=email)
+        user = self.model(email=email, full_name=full_name)
 
         user.set_password(password)
         user.save(using=self._db)
 
         return user
 
-    def create_superuser(self, email, password):
+    def create_superuser(self, email, full_name, password):
         """ Create a new superuser profile """
         user = self.create_user(email, password)
         user.is_superuser = True
         user.is_staff = True
-
 
         user.save(using=self._db)
 
@@ -37,17 +36,20 @@ class UserProfileManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     """ Database model for users in the system """
     email = models.EmailField(max_length=255, unique=True)
+    full_name = models.CharField(max_length=255)
     otp = models.CharField(max_length=6, null=True, blank=True)
 
     objects = UserProfileManager()
 
     USERNAME_FIELD = 'email'
-    
+    REQUIRED_FIELDS = ['full_name']
 
     def __str__(self):
         """ Return string representation of our user """
         return self.email
 
+
+	
 
 class Cart(models.Model):
     id = models.UUIDField(primary_key=True)
