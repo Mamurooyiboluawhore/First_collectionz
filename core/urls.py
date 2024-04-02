@@ -22,7 +22,7 @@ urlpatterns = [
     path('api/accounts/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/accounts/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('category/', include('category.urls')),
-    path('chatApp', include('chatApp.urls')),
+    path('chatApp/', include('chatApp.urls')),
     # path('payment/', include('payment.urls')),
     path('coupon/', include('coupon.urls')),
     path('products/', include('products.urls')),
