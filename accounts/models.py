@@ -1,48 +1,51 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin
-from django.contrib.auth.models import BaseUserManager
+# from django.contrib.auth.models import PermissionsMixin
 from django.utils import timezone
+from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import AbstractUser
 import uuid
 
 
 
 class UserProfileManager(BaseUserManager):
     """ Manager for user profiles """
-    def create_user(self, email, full_name, password=None):
+    def create_user(self, email, password=None, **extra_fields):
         """ Create a new user profile """
         if not email:
             raise ValueError('User must have an email address')
 
         email = self.normalize_email(email)
-        user = self.model(email=email, full_name=full_name)
+        user = self.model(email=email, **extra_fields)
 
         user.set_password(password)
-        user.save(using=self._db)
-
+        user.save()
         return user
 
-    def create_superuser(self, email, full_name, password):
+    def create_superuser(self, email, password, **extra_fields):
         """ Create a new superuser profile """
-        user = self.create_user(email, password)
-        user.is_superuser = True
-        user.is_staff = True
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        # u?ser = self.create_user(email, password)
+        
+        # user.save(using=self._db)
 
-        user.save(using=self._db)
-
-        return user
+        return self.create_user(email, password, **extra_fields)
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractUser):
     """ Database model for users in the system """
+    username = None
     email = models.EmailField(max_length=255, unique=True)
     full_name = models.CharField(max_length=255)
     otp = models.CharField(max_length=6, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at =models.DateTimeField(auto_now_add=True)
 
     objects = UserProfileManager()
 
+
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['full_name']
+    REQUIRED_FIELDS = []
 
     def __str__(self):
         """ Return string representation of our user """

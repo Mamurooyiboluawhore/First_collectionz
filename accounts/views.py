@@ -18,7 +18,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import authenticate
-
+from django.utils import timezone 
 
 User = get_user_model()
 
@@ -35,6 +35,19 @@ class ValidateOTP(APIView):
         print(user.otp)  # Print the OTP for debugging purposes
 
         if user.otp == otp:
+            # check if token has expired
+            time_difference = max(user.created_at, user.updated_at)
+            mins_difference = (
+                timezone.now() - time_difference
+            ).total_seconds() / 60
+            if mins_difference > 2:
+                response = {
+                    "response_status": "error",
+                    "status_code": status.HTTP_400_BAD_REQUEST,
+                    "message": "OTP token expired. Try again.",
+                }
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        
             user.otp = None
             user.save()
 
@@ -47,6 +60,36 @@ class ValidateOTP(APIView):
 
 		
 
+
+class ResendOtpView(APIView):
+      def patch(self, request):
+            """Resends a new OTP to the registered Email ID"""
+            email = request.query_params.get('email')
+            try:
+                  user = User.objects.get(email=email)
+
+            except User.DoesNotExist:
+                  response = {'response_status':'error',
+                              'status_code':status.HTTP_404_NOT_FOUND,
+                              'message':'User does not exist'}
+                  return Response(response, status=status.HTTP_404_NOT_FOUND)
+            if user.otp is None:
+                  response = {
+                        'message': "Ypur account already verified"
+                  }
+                  return Response(response, status=status.HTTP_400_BAD_REQUEST)
+            otp = generate_otp()
+            user.otp=otp
+            user.save()
+            send_plain_text_email(message=otp, to_email=email, subject="this is your new otp")
+            
+
+            response ={
+                  'message': 'new otp has been sent to your email!',
+                  'status': status.HTTP_200_OK
+            }
+            return Response(response, status=status.HTTP_200_OK)
+      
 class UserCreateAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterUserSerializer
