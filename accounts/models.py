@@ -58,9 +58,8 @@ class Cart(models.Model):
     id = models.UUIDField(primary_key=True)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     product = models.ForeignKey("Product", models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField(db_column='created_At', auto_now_add=True)
-    updated_at = models.DateTimeField(db_column='updated_At',  auto_now_add=True)
-
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'cart'
@@ -137,13 +136,13 @@ class NotificationSetting(models.Model):
 class Order(models.Model):
     id = models.UUIDField(primary_key=True)
     customer = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    vat = models.DecimalField(db_column='VAT', max_digits=10, decimal_places=2)
-    discount = models.DecimalField(max_digits=10, decimal_places=2)
+    vat = models.DecimalField(db_column='VAT', max_digits=10, decimal_places=2, null=True)
+    discount = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     status = models.TextField() 
-    createdat = models.DateTimeField(db_column='created_At', blank=True, null=True)
-    updatedat = models.DateTimeField(db_column='updated_At', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-
+    promo = models.ForeignKey('Promotion', models.DO_NOTHING, blank=True, null=True)
     class Meta:
         db_table = 'order'
 
@@ -249,43 +248,7 @@ class Promotion(models.Model):
 
     class Meta:
         db_table = 'promotion'
-
-
-class Role(models.Model):
-    name = models.CharField(max_length=225, blank=True, null=True)
-    class Meta:
-        db_table = 'role'
-
-
-
-# class User(models.Model):
-#     id = models.UUIDField(primary_key=True)
-#     username = models.CharField(max_length=255, blank=True, null=True)
-#     first_name = models.CharField(max_length=255)
-#     last_name = models.CharField(max_length=255)
-#     email = models.CharField(max_length=255)
-#     role = models.ForeignKey(Role, models.DO_NOTHING, blank=True, null=True)
-#     section_order = models.TextField(blank=True, null=True)
-#     password = models.CharField(max_length=255, blank=True, null=True)
-#     provider = models.CharField(max_length=255, blank=True, null=True)
-#     phone_number = models.CharField(max_length=255, blank=True, null=True)
-#     is_verified = models.BooleanField(blank=True, null=True)
-#     two_factor_auth = models.BooleanField(blank=True, null=True)
-#     location = models.CharField(max_length=255, blank=True, null=True)
-#     country = models.CharField(max_length=255, blank=True, null=True)
-#     profile_pic = models.TextField(blank=True, null=True)
-#     profile_cover_photo = models.TextField(blank=True, null=True)
-#     createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)
-#     last_login = models.DateTimeField(blank=True, null=True)
-#     refresh_token = models.TextField(blank=True, null=True)
-#     is_seller = models.BooleanField(blank=True, null=True)
-#     slug = models.CharField(max_length=255, blank=True, null=True)
-#     two_fa_code = models.CharField(blank=True, null=True)
-
-#     class Meta:
-#         db_table = 'user'
         
-
 
 class UserProductRating(models.Model):
     user_id = models.UUIDField(blank=True, null=True)
