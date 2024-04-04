@@ -186,8 +186,8 @@ class Product(models.Model):
     rating = models.ForeignKey('UserProductRating', models.DO_NOTHING, blank=True, null=True)
     is_published = models.BooleanField()
     currency = models.CharField(max_length=10)
-    createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)
-    updatedat = models.DateTimeField(db_column='updatedAt', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     sub_category = models.ForeignKey('ProductSubCategory', models.DO_NOTHING, blank=True, null=True)
     image = models.ImageField(upload_to='product_images/', null=False, blank=True)
 
