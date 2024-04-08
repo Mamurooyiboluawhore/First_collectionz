@@ -69,9 +69,8 @@ class Complaint(models.Model):
     product = models.ForeignKey('Product', models.DO_NOTHING, blank=True, null=True)
     complaint_text = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=225, blank=True, null=True)
-    created_at = models.DateTimeField(db_column='created_At', blank=True, null=True)
-    updated_at = models.DateTimeField(db_column='updated_At', blank=True, null=True)
-
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         db_table = 'complaint'
 
@@ -80,9 +79,8 @@ class ComplaintComment(models.Model):
     complaint = models.ForeignKey('Complaint', models.DO_NOTHING, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField(db_column='created_At', blank=True, null=True)
-    updated_at = models.DateTimeField(db_column='updated_At', blank=True,  null=True)
-
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         db_table = 'complaint_comment'
 
@@ -151,8 +149,8 @@ class OrderItems(models.Model):
     product = models.ForeignKey('Product', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     promo = models.ForeignKey('Promotion', models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField(db_column='created_At', blank=True, null=True)
-    updated_at = models.DateTimeField(db_column='updated_At', blank=True, null=True )
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     deleted_at = models.DateTimeField(db_column='deleted_At', blank=True, null=True)
     is_delete = models.BooleanField(blank=True, null=True)
     status = models.TextField(blank=True, null=True) 
@@ -197,16 +195,16 @@ class Product(models.Model):
 class ProductCategory(models.Model):
     user = models.ForeignKey('User', models.DO_NOTHING, null=True, blank=True)
     name = models.CharField(max_length=300, blank=True, null=True)
-    created_at = models.DateTimeField(db_column='create_At', blank=True, null=True)
-
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(default=timezone.now)
     class Meta:
         db_table = 'product_category'
 
 class ProductSubCategory(models.Model):
     name = models.CharField(max_length=300, blank=True, null=True)
     parent_category = models.ForeignKey('ProductCategory', models.DO_NOTHING, blank=True, null=True)
-    createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)
-
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         db_table = 'product_sub_category'
 
@@ -216,7 +214,8 @@ class ProductReview(models.Model):
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     reply = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
-    createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'product_review'
@@ -227,7 +226,8 @@ class PromoProduct(models.Model):
     product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
     promo = models.ForeignKey('Promotion', models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)  # Field name made lowercase.
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'promo_product'
@@ -243,9 +243,8 @@ class Promotion(models.Model):
     valid_from = models.DateTimeField()
     valid_to = models.DateTimeField()
     maximum_discount_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    createdat = models.DateTimeField(db_column='createdAt', blank=True, null=True)  # Field name made lowercase.
-    updatedat = models.DateTimeField(db_column='updatedAt', blank=True, null=True)  # Field name made lowercase.
-
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         db_table = 'promotion'
         
@@ -262,8 +261,7 @@ class Wishlist(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
-    createdat = models.DateTimeField(db_column='createdAt', default=timezone.now, blank=True, null=True)
-    updatedat = models.DateTimeField(db_column='updatedAt', default=timezone.now, blank=True, null=True)
-
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         db_table = 'wishlist'
