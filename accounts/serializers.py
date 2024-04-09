@@ -32,3 +32,28 @@ class UserSerializer(serializers.ModelSerializer):
 class ChangePasswordSerializer(serializers.Serializer):
 	old_password = serializers.CharField()
 	new_password = serializers.CharField()
+
+
+class ResetPasswordEmailSerializer(serializers.Serializer):
+	email = serializers.EmailField()
+
+class ValidateResetPasswordSerializer(serializers.Serializer):
+	email = serializers.EmailField()
+	otp = serializers.CharField()
+
+class ConfirmPasswordResetSerializer(serializers.Serializer):
+	email = serializers.EmailField()
+	otp = serializers.CharField()
+	password_1 = serializers.CharField()
+	password_2 = serializers.CharField()
+
+
+class RegisterSelllerSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = User
+		fields = ['pk', 'full_name', 'phone', 'email', 'password', 'admin']
+		extra_kwargs = {
+			'password': {'write_only': True},
+			'pk': {'read_only': True},
+			'admin': {'read_only': True},
+		}
