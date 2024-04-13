@@ -76,4 +76,4 @@ class CategoryDetailAPIViews(APIView):
             product.delete()
             return Response({'message': 'category deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return Response({'error': str(e)}, status=500)
