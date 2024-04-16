@@ -132,6 +132,16 @@ class NotificationSetting(models.Model):
 
 
 class Order(models.Model):
+    PAYMENT_STATUS_PENDING='P'
+    PAYMENT_STATUS_PROCESSING='PR'
+    PAYMENT_STATUS_COMPLETE='C'
+    PAYMENT_STATUS_FAILED='F'
+
+    PAYMENT_STATUS_CHOICES = [
+        (PAYMENT_STATUS_PENDING, 'pending'),
+        (PAYMENT_STATUS_COMPLETE, 'complete'),
+        (PAYMENT_STATUS_FAILED, 'failed'),
+    ]
     id = models.UUIDField(primary_key=True)
     customer = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     vat = models.DecimalField(db_column='VAT', max_digits=10, decimal_places=2, null=True)
@@ -141,6 +151,7 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     promo = models.ForeignKey('Promotion', models.DO_NOTHING, blank=True, null=True)
+    payment_status = models.CharField(max_length=50, choices=PAYMENT_STATUS_CHOICES, default=pa)
     class Meta:
         db_table = 'order'
 
