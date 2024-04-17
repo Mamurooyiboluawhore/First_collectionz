@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from accounts.models import Order, User
-from .serializers import OrderSerializers
+from .serializers import OrderCreateSerializer, OrderItemsSerializer, OrderSerializer
 from rest_framework.permissions import IsAuthenticated
 
 class OrderListCreateAPIView(APIView):
@@ -26,32 +26,37 @@ class OrderListCreateAPIView(APIView):
             if request.user.is_staff:
                 # Retrieve all orders if user is staff
                 queryset = Order.objects.all().order_by('-date')
-                serializer = OrderSerializers(queryset, many=True)
+                serializer = OrderSerializer(queryset, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 if pk is None:
                     # Retrieve the logged in user's orders only
                     queryset = Order.objects.filter(user=request.user).order_by('-date')
-                    serializer = OrderSerializers(queryset, many=True)
+                    serializer = OrderSerializer(queryset, many=True)
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
                     # Retrieve an order by its primary key
                     order = get_object_or_404(Order, pk=pk, user=request.user)
-                    serializer = OrderSerializers(order)
+                    serializer = OrderSerializer(order)
                     return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        
+
 
     def post(self, request):
         try:
-            serializer = OrderSerializers(data=request.data)
+            serializer = OrderCreateSerializer(data=request.data)
             if serializer.is_valid():
             # serializer.is_valid(raise_exception=True)  # Validate input values
-                serializer.save()                   # Save new order in database
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                serializer.save()
+                response = {
+                    'message':'Order successfully created',
+                    'order': serializer.data,
+                    'status': status.HTTP_201_CREATED
+                }                   # Save new order in database
+                return Response(response, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
@@ -61,7 +66,7 @@ class OrderListCreateAPIView(APIView):
     def put(self, request, pk):
         try:
             order = Order.objects.get(pk)
-            serializer = OrderSerializers(order)
+            serializer = OrderSerializer(order)
             if serializer.is_valid():
                 serializer.update_fields(order, validated_data=request.data)
                 serializer.save
@@ -91,4 +96,3 @@ class OrderListCreateAPIView(APIView):
             return Response(status=404)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
