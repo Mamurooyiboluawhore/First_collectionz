@@ -24,7 +24,7 @@ def send_plain_text_email(subject, to_email, message, **kwargs):
     email = EmailMultiAlternatives(
         subject=subject,
         body=message,
-        from_email="abiolaadedayo1993@gmail.com",
+        from_email="mamurooyibo@gmail.com",
         to=[to_email],  # Recipient's email address(es)
     )
 

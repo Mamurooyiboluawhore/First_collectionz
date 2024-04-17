@@ -135,6 +135,52 @@ class UserCreateAPIView(generics.CreateAPIView):
 
 user_create = UserCreateAPIView.as_view()
 
+class UserLoginAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email', '')
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Authenticate the user
+        user = authenticate(request, email=email)
+        if user:
+            # Generate tokens
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            response_data = {
+                  'user': {
+                        'id': user.id,
+                        'username': user.username,
+                },
+                'tokens': {
+                    'refresh': str(refresh),
+                    'access': access_token,
+                }
+            }
+            response = Response(response_data, status=status.HTTP_200_OK)
+            #response.set_cookie(key='access_token', value=access_token, httponly=True)
+            return response
+        else:
+            return Response({'error': 'Authentication failed.'}, status=status.HTTP_401_UNAUTHORIZED)
+        # Return response with token information
+        return Response({
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                },
+                'tokens': {
+                    'refresh': str(refresh),
+                    'access': access_token,
+                    }
+                    })
+    
+
+
 
 class UserViewSet(viewsets.ModelViewSet):
 	queryset = User.objects.all()
