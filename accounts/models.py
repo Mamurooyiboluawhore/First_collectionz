@@ -156,6 +156,15 @@ class Order(models.Model):
     class Meta:
         db_table = 'order'
 
+    def __str__(self):
+        return self.pending_status
+    
+    @property 
+    def total_price(self):
+        items = self.items.all()
+        total = sum([item.quantity * item.product.price for item in items])
+        return total
+
 
 class OrderItems(models.Model):
     product = models.ForeignKey('Product', models.DO_NOTHING, blank=True, null=True)
