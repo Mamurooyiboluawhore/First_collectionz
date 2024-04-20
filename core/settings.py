@@ -185,6 +185,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 AUTH_USER_MODEL = 'accounts.User'
 
+FLW_SEC_KEY = os.getenv('Secret_key')
+
 
 ASGI_APPLICATION = 'core.asgi.application'
 # Channels

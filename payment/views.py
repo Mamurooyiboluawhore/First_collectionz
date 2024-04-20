@@ -63,7 +63,7 @@ except RaveExceptions.TransactionVerificationError as e:
 def initiate_payment(amount, email, order_id):
     url = "https://api.flutterwave.com/v3/payments"
     headers = {
-        "Authorization": f"Bearer {os.getenv('Secret_key')}"    
+        "Authorization": f"Bearer {core.settings.FLW_SEC_KEY}"    
     }
     
     data = {
@@ -97,40 +97,28 @@ def initiate_payment(amount, email, order_id):
         return Response({"error": str(err)}, status=500)
     
 
-@csrf_exempt
-@api_view(['POST'])
-def confirm_payment(request, o_id):
-    """
-    Confirm a payment made to an order using Flutterwave Transaction Reference (tx_ref).
-    The tx_ref is sent in the redirect URL when the user makes a successful payment on Flutterwave.
-    This view returns the status of that transaction and updates the Order model with the appropriate status if it was successful or failed.
-    This view returns a JSON object with information about the transaction if it exists and has not been confirmed yet.
-    This view returns the transaction details if it exists and has not been confirmed yet.
-    If the transaction does not exist or has already been confirmed, it will return a message saying so.
-    :param request: HTTP Request from client
-    :type request: HttpRequest
-    :param o_id: Order ID of the order being paid for
-    :type o_id: int
-    :return: JSON object containing transaction data if it exists and hasn't been confirmed
-    Message stating that the transaction doesn't exist or has been confirmed
-    :rtype: JsonResponse
-    """
-    url = f"https://api.flutterwave.com/v3/transactions/{o_id}"
-    headers = {"Authorization":"Bearer FLWSECK_TEST-d6fadbebeccddc9cd2bfbd9eeaeff3fd"} #
-    params = {'flw_test': True}
-    try:
-        resp = requests.get(url, headers=headers, params=params)
-        if resp.status_code == 200:
-            data = resp.json()
-            if 'data' in data and len(data['data']) > 0:
-                trans = data['data'][0]
-                if trans['meta']['verification']['status'] != 'successful':
-                    return Response({"message": "Transaction Not Successfully Verified"}, status=400)
-                elif 'message' in data:
-                    return Response(data)
-                else:
-                    return Response(trans)
-            
-    except Exception as e:
-        return Response({"Error":str(e)})
-            
+
+class Payment(APIView):
+
+    def pay(self, request, pk):
+        order = self.get_object()
+        amount = order.total_price
+        email = request.user.email
+        order_id = str(order.id)
+        # redirect_url = "http://127.0.0.1:8000/confirm"
+        return initiate_payment(amount, email, order_id)
+    
+    @action(detail=False, methods=["POST"])
+    def confirm_payment(self, request):
+        order_id = request.GET.get("o_id")
+        order = Order.objects.get(id=order_id)
+        order.pending_status = "C"
+        order.save()
+        serializer = OrderSerializer(order)
+        
+        data = {
+            "msg": "payment was successful",
+            "data": serializer.data
+        }
+        return Response(data)
+    
