@@ -152,7 +152,7 @@ class Order(models.Model):
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     promo = models.ForeignKey('Promotion', models.DO_NOTHING, blank=True, null=True)
     payment_status = models.CharField(max_length=50, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
-
+   
     class Meta:
         db_table = 'order'
 

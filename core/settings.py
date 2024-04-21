@@ -49,11 +49,11 @@ INSTALLED_APPS = [
     'channels',
     'chatApp',
     'coupon',
-    'payment',
     'products',
     'search',
     'sort',
     'orders',
+    'payment',
     'wishlist',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -186,6 +186,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = 'accounts.User'
 
 FLW_SEC_KEY = os.getenv('Secret_key')
+FLW_REDIRECT_URL = "http://127.0.0.1:8000/api/orders/confirm_payment/"
 
 
 ASGI_APPLICATION = 'core.asgi.application'

@@ -1,7 +1,7 @@
 from django.urls import path
-from . import views
+from .views import Payment
 
-
-urlspattern = [
-    
+urlpatterns = [
+    path('initiate/', Payment.as_view(), name='payment_initiate'),
+    path('confirm/', Payment.as_view(), name='payment_confirm'),
 ]
