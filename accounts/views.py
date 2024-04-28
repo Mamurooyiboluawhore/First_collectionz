@@ -22,7 +22,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import authenticate
-from django.utils import timezone 
+from django.utils import timezone
+from datetime import timezone
 
 User = get_user_model()
 
