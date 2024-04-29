@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'chatApp',
     'coupon',
     'products',
+    'product_images',
     'search',
     'sort',
     'orders',
