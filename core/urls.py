@@ -7,6 +7,9 @@ from drf_yasg import openapi
 from rest_framework import permissions
 from products.views import ProductListCreateAPIView, ProductDetailAPIViews
 from search.views import SearchView
+from django.conf.urls.static import static
+from django.conf import settings
+
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -34,4 +37,4 @@ urlpatterns = [
     path('recommendations/', include('recommendations.urls')),
     # path('payment/', include('payment.urls')),
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0),name='schema-swagger-ui'),
-]
+]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
