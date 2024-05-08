@@ -64,6 +64,19 @@ class Cart(models.Model):
     class Meta:
         db_table = 'cart'
 
+
+class ChatMessages(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user' )
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender' )
+    reciever = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reciever' )
+    messasge = models.CharField(max_length=700,)
+    is_read =models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+     
+    class Meta:
+        db_table = 'ChatMessages'
+
 class Complaint(models.Model):
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     product = models.ForeignKey('Product', models.DO_NOTHING, blank=True, null=True)

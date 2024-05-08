@@ -57,3 +57,24 @@ class RegisterSelllerSerializer(serializers.ModelSerializer):
 			'pk': {'read_only': True},
 			'admin': {'read_only': True},
 		}
+
+class LoginUserSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = User
+		fields = ['pk', 'email', 'password']
+		extra_kwargs = {
+			'password': {'write_only': True},
+			'pk': {'read_only': True},
+		}
+
+class UserLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        try:
+            user = User.objects.get(email=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User with this email does not exist.")
+        return value
+
+

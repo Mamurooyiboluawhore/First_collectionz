@@ -2,6 +2,8 @@ import random
 import string
 from django.core.mail import send_mail
 from django.conf import settings
+import smtplib
+
 
 def generate_otp(length=6):
     characters = string.digits
