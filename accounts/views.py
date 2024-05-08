@@ -164,22 +164,10 @@ class UserLoginAPIView(APIView):
                 }
             }
             response = Response(response_data, status=status.HTTP_200_OK)
-            #response.set_cookie(key='access_token', value=access_token, httponly=True)
             return response
         else:
             return Response({'error': 'Authentication failed.'}, status=status.HTTP_401_UNAUTHORIZED)
-        # Return response with token information
-        return Response({
-            'user': {
-                'id': user.id,
-                'username': user.username,
-                },
-                'tokens': {
-                    'refresh': str(refresh),
-                    'access': access_token,
-                    }
-                    })
-    
+        
 
 
 
