@@ -24,6 +24,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import authenticate
 from django.utils import timezone
 from datetime import timezone
+from .serializers import UserLoginSerializer
 
 User = get_user_model()
 
@@ -136,11 +137,14 @@ class UserCreateAPIView(generics.CreateAPIView):
 
 user_create = UserCreateAPIView.as_view()
 
+
 class UserLoginAPIView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        email = request.data.get('email', '')
+        serializer = UserLoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
 
         try:
             user = User.objects.get(email=email)
@@ -154,9 +158,10 @@ class UserLoginAPIView(APIView):
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
             response_data = {
-                  'user': {
-                        'id': user.id,
-                        'username': user.username,
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'message': 'You are logged in' 
                 },
                 'tokens': {
                     'refresh': str(refresh),
@@ -167,7 +172,6 @@ class UserLoginAPIView(APIView):
             return response
         else:
             return Response({'error': 'Authentication failed.'}, status=status.HTTP_401_UNAUTHORIZED)
-        
 
 
 
