@@ -16,7 +16,7 @@ from .serializers import (
 )
 
 from .permissions import IsAccountOwner
-from .sendmail import send_plain_text_email
+from .sendmail import send_plain_text_email, Send_email_with_zoho_server
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.authtoken.models import Token
@@ -87,7 +87,7 @@ class ResendOtpView(APIView):
             otp = generate_otp()
             user.otp=otp
             user.save()
-            send_plain_text_email(message=otp, to_email=email, subject="this is your new otp")
+            Send_email_with_zoho_server(message=otp, to_email=email, subject="this is your new otp")
             
 
             response ={
@@ -110,9 +110,9 @@ class UserCreateAPIView(generics.CreateAPIView):
             otp = generate_otp()
             user.otp = otp
             user.save()
-            send_otp_email(user.email, otp)
-            send_plain_text_email(
-                subject='OTP for Account Verification',
+            # send_otp_email(user.email, otp)
+            Send_email_with_zoho_server(
+                # subject='OTP for Account Verification',
                 to_email=user.email,
                 message=f'Your OTP for account verification is: {otp}'
             )
@@ -152,7 +152,7 @@ class UserLoginAPIView(APIView):
             return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
         # Authenticate the user
-        user = authenticate(request, email=email)
+        # user = authenticate(request, email=email)
         if user:
             # Generate tokens
             refresh = RefreshToken.for_user(user)
@@ -237,7 +237,7 @@ class PasswordResetAPIView(generics.GenericAPIView):
 		user.otp = otp
 		user.save()
 
-		send_otp_email(email, otp)
+		SyntaxError(email, otp)
 
 		return Response({
 			'message': 'OTP has been sent to your email',
@@ -304,4 +304,14 @@ class ConfirmPasswordResetAPIView(generics.GenericAPIView):
 		}, status=status.HTTP_400_BAD_REQUEST)
 
 confirm_password_reset = ConfirmPasswordResetAPIView.as_view()
+
+
+class Testemail(APIView):
+      def get(self, request):
+            zoho()
+            response = {
+                  'message': 'email sent',
+                  'status': 200
+            }
+            return Response(response, status=status.HTTP_200_OK)
 
