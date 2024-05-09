@@ -75,7 +75,20 @@ class ChatMessages(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
      
     class Meta:
-        db_table = 'ChatMessages'
+        ordering = ['-created_at']  # Message shown in descending order by default
+        verbose_name_plural = 'Messages'
+
+        def __str__(self) -> str:
+            return f"Message from {self.sender} to {self.reciever}"
+        
+        # @property
+        # def sender_profile(self):
+        #     if User.objects.filter(id=self.sender_id).exists():
+        #         return User.objects.get(id=self.sender_id).profile
+                
+
+
+        # db_table = 'ChatMessages'
 
 class Complaint(models.Model):
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)

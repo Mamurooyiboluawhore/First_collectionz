@@ -69,7 +69,7 @@ class LoginUserSerializer(serializers.ModelSerializer):
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
-
+	
     def validate_email(self, value):
         try:
             user = User.objects.get(email=value)

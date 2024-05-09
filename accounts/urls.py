@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from products.views import ProductListCreateAPIView, ProductDetailAPIViews
 from search.views import SearchView
-from .views import ValidateOTP, ResendOtpView, UserLoginAPIView
+from .views import ValidateOTP, ResendOtpView, UserLoginAPIView, Testemail
 # from search import SearchView
 
 
@@ -13,6 +13,7 @@ urlpatterns = [
     path('login/', UserLoginAPIView.as_view(), name='user-login'),
 	path('<int:pk>/', views.user_detail_viewset, name='user_detail_viewset'),
 	path('', views.user_detail, name='user_detail'),
+    path('testing/', Testemail.as_view(), name='testing'),
 	path('<int:pk>/update/', views.user_update_viewset, name='user_update'),
 	path('change-password/', views.change_password, name='change_password'),
     # path('login-with-otp/', LoginWithOTP.as_view(), name='login-with-otp'),
