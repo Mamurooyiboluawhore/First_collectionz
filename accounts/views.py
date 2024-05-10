@@ -308,7 +308,7 @@ confirm_password_reset = ConfirmPasswordResetAPIView.as_view()
 
 class Testemail(APIView):
       def get(self, request):
-            zoho()
+            Send_email_with_zoho_server()
             response = {
                   'message': 'email sent',
                   'status': 200
