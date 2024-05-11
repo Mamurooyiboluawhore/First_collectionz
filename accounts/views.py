@@ -54,6 +54,7 @@ class ValidateOTP(APIView):
                 }
                 return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
+            user.otp_verified = True  # Mark OTP as verified
             user.otp = None
             user.save()
 
@@ -69,7 +70,13 @@ class ValidateOTP(APIView):
 
 class ResendOtpView(APIView):
       def patch(self, request):
-            """Resends a new OTP to the registered Email ID"""
+            """Resends a new OTP to the registered Email ID
+                Payload:
+                    {
+                        "email": "user@example.com"
+                    }
+            """
+            
             email = request.query_params.get('email')
             try:
                   user = User.objects.get(email=email)
@@ -81,7 +88,7 @@ class ResendOtpView(APIView):
                   return Response(response, status=status.HTTP_404_NOT_FOUND)
             if user.otp is None:
                   response = {
-                        'message': "Ypur account already verified"
+                        'message': "Your account already verified"
                   }
                   return Response(response, status=status.HTTP_400_BAD_REQUEST)
             otp = generate_otp()
@@ -150,10 +157,7 @@ class UserLoginAPIView(APIView):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
-
-        # Authenticate the user
-        # user = authenticate(request, email=email)
-        if user:
+        if user.otp_verified:
             # Generate tokens
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
@@ -171,8 +175,7 @@ class UserLoginAPIView(APIView):
             response = Response(response_data, status=status.HTTP_200_OK)
             return response
         else:
-            return Response({'error': 'Authentication failed.'}, status=status.HTTP_401_UNAUTHORIZED)
-
+            return Response({'error': 'OTP not verified. Please verify OTP first.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserViewSet(viewsets.ModelViewSet):
