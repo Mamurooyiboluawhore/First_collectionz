@@ -11,7 +11,8 @@ from .serializers import (
 	ChangePasswordSerializer,
 	ValidateResetPasswordSerializer,
 	ConfirmPasswordResetSerializer,
-	ResetPasswordEmailSerializer
+	ResetPasswordEmailSerializer,
+    UserLoginSerializer
 	
 )
 
@@ -23,8 +24,8 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import authenticate
 from django.utils import timezone
-from datetime import timezone
-from .serializers import UserLoginSerializer
+# from datetime import timezone
+
 
 User = get_user_model()
 
@@ -77,7 +78,7 @@ class ResendOtpView(APIView):
                     }
             """
             
-            email = request.query_params.get('email')
+            email = request.data.get('email')
             try:
                   user = User.objects.get(email=email)
 
@@ -94,7 +95,7 @@ class ResendOtpView(APIView):
             otp = generate_otp()
             user.otp=otp
             user.save()
-            Send_email_with_zoho_server(message=otp, to_email=email, subject="this is your new otp")
+            Send_email_with_zoho_server(message=otp, to_email=email)
             
 
             response ={
@@ -157,26 +158,28 @@ class UserLoginAPIView(APIView):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
-        if user.otp_verified:
+        try:
+            if user.otp_verified:
             # Generate tokens
-            refresh = RefreshToken.for_user(user)
-            access_token = str(refresh.access_token)
-            response_data = {
-                'user': {
-                    'id': user.id,
-                    'username': user.username,
-                    'message': 'You are logged in' 
-                },
-                'tokens': {
-                    'refresh': str(refresh),
-                    'access': access_token,
-                }
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+                response_data = {
+                    'user': {
+                        'id': user.id,
+                        'username': user.username,
+                        'message': 'You are logged in' 
+                    },
+                    'tokens': {
+                        'refresh': str(refresh),
+                        'access': access_token,
+                    }
             }
-            response = Response(response_data, status=status.HTTP_200_OK)
-            return response
-        else:
+                response = Response(response_data, status=status.HTTP_200_OK)
+                return response
+            else:
+                return Response({'error': 'OTP not verified. Please verify OTP first.'}, status=status.HTTP_401_UNAUTHORIZED)
+        except AttributeError:
             return Response({'error': 'OTP not verified. Please verify OTP first.'}, status=status.HTTP_401_UNAUTHORIZED)
-
 
 class UserViewSet(viewsets.ModelViewSet):
 	queryset = User.objects.all()
