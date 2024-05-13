@@ -11,7 +11,8 @@ from .serializers import (
 	ChangePasswordSerializer,
 	ValidateResetPasswordSerializer,
 	ConfirmPasswordResetSerializer,
-	ResetPasswordEmailSerializer
+	ResetPasswordEmailSerializer,
+    UserLoginSerializer
 	
 )
 
@@ -23,8 +24,8 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import authenticate
 from django.utils import timezone
-from datetime import timezone
-from .serializers import UserLoginSerializer
+# from datetime import timezone
+
 
 User = get_user_model()
 
@@ -54,6 +55,7 @@ class ValidateOTP(APIView):
                 }
                 return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
+            user.otp_verified = True  # Mark OTP as verified
             user.otp = None
             user.save()
 
@@ -69,8 +71,14 @@ class ValidateOTP(APIView):
 
 class ResendOtpView(APIView):
       def patch(self, request):
-            """Resends a new OTP to the registered Email ID"""
-            email = request.query_params.get('email')
+            """Resends a new OTP to the registered Email ID
+                Payload:
+                    {
+                        "email": "user@example.com"
+                    }
+            """
+            
+            email = request.data.get('email')
             try:
                   user = User.objects.get(email=email)
 
@@ -81,13 +89,13 @@ class ResendOtpView(APIView):
                   return Response(response, status=status.HTTP_404_NOT_FOUND)
             if user.otp is None:
                   response = {
-                        'message': "Ypur account already verified"
+                        'message': "Your account already verified"
                   }
                   return Response(response, status=status.HTTP_400_BAD_REQUEST)
             otp = generate_otp()
             user.otp=otp
             user.save()
-            Send_email_with_zoho_server(message=otp, to_email=email, subject="this is your new otp")
+            Send_email_with_zoho_server(message=otp, to_email=email)
             
 
             response ={
@@ -150,30 +158,28 @@ class UserLoginAPIView(APIView):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
-
-        # Authenticate the user
-        # user = authenticate(request, email=email)
-        if user:
+        try:
+            if user.otp_verified:
             # Generate tokens
-            refresh = RefreshToken.for_user(user)
-            access_token = str(refresh.access_token)
-            response_data = {
-                'user': {
-                    'id': user.id,
-                    'username': user.username,
-                    'message': 'You are logged in' 
-                },
-                'tokens': {
-                    'refresh': str(refresh),
-                    'access': access_token,
-                }
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+                response_data = {
+                    'user': {
+                        'id': user.id,
+                        'username': user.username,
+                        'message': 'You are logged in' 
+                    },
+                    'tokens': {
+                        'refresh': str(refresh),
+                        'access': access_token,
+                    }
             }
-            response = Response(response_data, status=status.HTTP_200_OK)
-            return response
-        else:
-            return Response({'error': 'Authentication failed.'}, status=status.HTTP_401_UNAUTHORIZED)
-
-
+                response = Response(response_data, status=status.HTTP_200_OK)
+                return response
+            else:
+                return Response({'error': 'OTP not verified. Please verify OTP first.'}, status=status.HTTP_401_UNAUTHORIZED)
+        except AttributeError:
+            return Response({'error': 'OTP not verified. Please verify OTP first.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class UserViewSet(viewsets.ModelViewSet):
 	queryset = User.objects.all()

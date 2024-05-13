@@ -38,6 +38,7 @@ class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
     full_name = models.CharField(max_length=255)
     otp = models.CharField(max_length=6, null=True, blank=True)
+    otp_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now=True)
     updated_at =models.DateTimeField(auto_now_add=True)
 
