@@ -76,10 +76,18 @@ class UserLoginSerializer(serializers.Serializer):
         email = data.get('email')
         password = data.get('password')
 
-        # Authenticate user
-        user = authenticate(username=email, password=password)
-        if user is None:
-            raise serializers.ValidationError("Invalid email or password.")
-        
+        try:
+            # Retrieve the user directly using get() method
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError({'email': 'Invalid email'})
+
+        # Check if password is valid
+        if not user.check_password(password):
+            raise serializers.ValidationError({'password': 'Invalid password'})
+
         data['user'] = user
         return data
+
+
+    
