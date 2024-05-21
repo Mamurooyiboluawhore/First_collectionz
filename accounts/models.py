@@ -237,6 +237,8 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
     sub_category = models.ForeignKey('ProductSubCategory', models.DO_NOTHING, blank=True, null=True)
     image = models.ImageField(upload_to='product_images/', null=False, blank=True)
+    size = models.CharField(max_length=100, null=True, blank=True)
+    colours = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
         db_table = 'product'

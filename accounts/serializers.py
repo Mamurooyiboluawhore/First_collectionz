@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
@@ -69,12 +70,24 @@ class LoginUserSerializer(serializers.ModelSerializer):
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
-	
-    def validate_email(self, value):
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
         try:
-            user = User.objects.get(email=value)
+            # Retrieve the user directly using get() method
+            user = User.objects.get(email=email)
         except User.DoesNotExist:
-            raise serializers.ValidationError("User with this email does not exist.")
-        return value
+            raise serializers.ValidationError({'email': 'Invalid email'})
+
+        # Check if password is valid
+        if not user.check_password(password):
+            raise serializers.ValidationError({'password': 'Invalid password'})
+
+        data['user'] = user
+        return data
 
 
+    
