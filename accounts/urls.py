@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from products.views import ProductListCreateAPIView, ProductDetailAPIViews
 from search.views import SearchView
-from .views import ValidateOTP, ResendOtpView, UserLoginAPIView, Testemail, PasswordResetAPIView
+from .views import ValidateOTP, ResendOtpView, UserLoginAPIView, Testemail, PasswordResetAPIView, validate_password_reset_otp
 # from search import SearchView
 
 
@@ -18,7 +18,7 @@ urlpatterns = [
 	path('change-password/', views.change_password, name='change_password'),
     # path('login-with-otp/', LoginWithOTP.as_view(), name='login-with-otp'),
     path('password-reset/', views.password_reset, name='password_reset'),
-	path('validate-password-reset-otp/', views.validate_password_reset_otp, name='validate_password_reset_otp'),
+    path('validate-reset-password/', validate_password_reset_otp, name='validate-reset-password'),
 	path('confirm-password-reset/', views.confirm_password_reset, name='confirm_password_reset'),
     path('validate-otp/', ValidateOTP.as_view(), name='validate-otp'),
     path('resend-otp/', ResendOtpView.as_view(), name='resend-otp'),
