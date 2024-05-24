@@ -38,15 +38,19 @@ class ChangePasswordSerializer(serializers.Serializer):
 class ResetPasswordEmailSerializer(serializers.Serializer):
 	email = serializers.EmailField()
 
-class ValidateResetPasswordSerializer(serializers.Serializer):
-	email = serializers.EmailField()
-	otp = serializers.CharField()
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField()
+    new_password = serializers.CharField(write_only=True)
 
 class ConfirmPasswordResetSerializer(serializers.Serializer):
 	email = serializers.EmailField()
 	otp = serializers.CharField()
 	password_1 = serializers.CharField()
 	password_2 = serializers.CharField()
+
+class ValidateResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
 
 
 class RegisterSelllerSerializer(serializers.ModelSerializer):
