@@ -30,8 +30,6 @@ class CreateCartApiView(APIView):
             }
             return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
-        except Exception:
-            pass 
 
 class ListApiViews(APIView):
     def get_object(self, pk, requst):
