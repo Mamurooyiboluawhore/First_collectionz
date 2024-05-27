@@ -349,7 +349,7 @@ class ConfirmPasswordResetAPIView(generics.GenericAPIView):
 
 confirm_password_reset = ConfirmPasswordResetAPIView.as_view()
 
-class ValidatePasswordResetOTPAPIView(generics.GenericAPIView):
+class ValidatePasswordResetOTPAPIView(APIView):
     def post(self, request, *args, **kwargs):
         if 'otp' in request.data and 'new_password' in request.data:
             serializer_class = ResetPasswordSerializer
