@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/accounts/', include('accounts.urls')),
     path('api/accounts/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/accounts/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('cart/', include('cart.urls')),
     path('category/', include('category.urls')),
     path('chatApp/', include('chatApp.urls')),
     path('coupon/', include('coupon.urls')),

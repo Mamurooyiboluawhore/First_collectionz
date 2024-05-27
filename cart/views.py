@@ -33,7 +33,7 @@ class CreateCartApiView(APIView):
         except Exception:
             pass 
 
-class LispApiViews(APIView):
+class ListApiViews(APIView):
     def get_object(self, pk, requst):
         try:
             cart = get_object_or_404(Cart, pk=pk)
