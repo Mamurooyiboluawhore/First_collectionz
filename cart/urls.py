@@ -3,7 +3,7 @@ from .views import CreateCartApiView, ListApiViews, CartListdetails
 
 urlpatterns = [
     # URL pattern for listing all products and creating new products
-    path('', CreateCartApiView.as_view(), name='cart-list-create'),
+    path('create/', CreateCartApiView.as_view(), name='cart-list-create'),
     path('', ListApiViews.as_view(), name='cart-list'),
 
     # URL pattern for retrieving, updating, and deleting a specific product

@@ -56,7 +56,7 @@ class User(AbstractUser):
 	
 
 class Cart(models.Model):
-    id = models.UUIDField(primary_key=True)
+    # id = models.UUIDField(primary_key=True)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     product = models.ForeignKey("Product", models.DO_NOTHING, blank=True, null=True)
     created_at = models.DateTimeField(auto_now=True)

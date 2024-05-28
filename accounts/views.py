@@ -40,8 +40,7 @@ class ValidateOTP(APIView):
         except User.DoesNotExist:
             return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
-        print(user.otp)  # Print the OTP for debugging purposes
-
+        print(user.otp)
         if user.otp == otp:
             # check if token has expired
             time_difference = max(user.created_at, user.updated_at)
@@ -290,7 +289,7 @@ class PasswordResetAPIView(generics.GenericAPIView):
 
 password_reset = PasswordResetAPIView.as_view()
 
-class ValidatePasswordResetOTPAPIView(generics.GenericAPIView):
+class ValidatePasswordResetOTPAPIView(APIView):
 	serializer_class = ValidateResetPasswordSerializer
 
 	def post(self, request, *args, **kwargs):
