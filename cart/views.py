@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class CreateCartApiView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def post(self,request):
         try:
@@ -33,11 +33,16 @@ class CreateCartApiView(APIView):
             }
             return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
-        except Exception:
-            pass 
+        except Exception as e:
+            response= {
+                "message": "internal server error",
+                "status_code": 500,
+                "data": {'detail': str(e)},
+            }
+            return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ListApiViews(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self, pk, requst):
         try:
