@@ -7,9 +7,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import CartSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
 class CreateCartApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self,request):
         try:
             serializer = CartSerializer(data=request.data)
@@ -34,6 +37,8 @@ class CreateCartApiView(APIView):
             pass 
 
 class ListApiViews(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get_object(self, pk, requst):
         try:
             cart = get_object_or_404(Cart, pk=pk)
@@ -62,6 +67,8 @@ class ListApiViews(APIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 class CartListdetails(APIView):
+    permission_classes = [IsAuthenticated]
+
     def put(self, pk, request):
         try:
             cart = Cart.objects.get(pk=pk)
