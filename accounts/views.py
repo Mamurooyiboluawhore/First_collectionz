@@ -290,7 +290,7 @@ class PasswordResetAPIView(generics.GenericAPIView):
 
 password_reset = PasswordResetAPIView.as_view()
 
-class ValidatePasswordResetOTPAPIView(generics.GenericAPIView):
+class ValidatePasswordResetOTPAPIView(APIView):
 	serializer_class = ValidateResetPasswordSerializer
 
 	def post(self, request, *args, **kwargs):

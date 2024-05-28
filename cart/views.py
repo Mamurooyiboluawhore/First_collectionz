@@ -37,7 +37,7 @@ class CreateCartApiView(APIView):
             pass 
 
 class ListApiViews(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get_object(self, pk, requst):
         try:
@@ -56,7 +56,7 @@ class ListApiViews(APIView):
     def get(self, request):
         try:
             cart = Cart.objects.all()
-            serializer = CartSerializer(cart)
+            serializer = CartSerializer(cart, many=True)
             response = {
                 "message": "List of all cart",
                 "status_code": 200,
