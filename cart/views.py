@@ -42,22 +42,22 @@ class CreateCartApiView(APIView):
             return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ListApiViews(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
-    def get_object(self, pk, requst):
+    def get(self, request, pk):
         try:
             cart = get_object_or_404(Cart, pk=pk)
             serializer = CartSerializer(cart)
             response = {
-                "messasge": "list of cart",
+                "message": "list of cart",
                 "status_code": 200,
                 "data": serializer.data                 
             }
             return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response("internal server error", status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
-
-
+            return Response("internal server error", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
     def get(self, request):
         try:
             cart = Cart.objects.all()
