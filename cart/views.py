@@ -46,7 +46,7 @@ class ListApiViews(APIView):
 
     def get_object(self, pk, requst):
         try:
-            cart = get_object_or_404(Cart, pk=pk)
+            cart = get_object_or_404(Cart)
             serializer = CartSerializer(cart)
             response = {
                 "messasge": "list of cart",
