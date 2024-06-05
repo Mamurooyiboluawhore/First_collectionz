@@ -42,7 +42,7 @@ class CreateCartApiView(APIView):
             return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ListApiViews(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get_object(self, pk, requst):
         try:
