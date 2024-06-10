@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CreateCartApiView, ListApiViews, CartListdetails
+from .views import CreateCartApiView, ListApiViews, CartListDetails
 
 urlpatterns = [
     # URL pattern for listing all products and creating new products
@@ -7,12 +7,12 @@ urlpatterns = [
     path('', ListApiViews.as_view(), name='cart-list'),
 
     # URL pattern for retrieving, updating, and deleting a specific product
-    path('<uuid:pk>/', ListApiViews.as_view(), name='cart-detail'),
+    path('<uuid:pk>/', ListApiViews.as_view(), name='cart-item'),
 
     # URL pattern for updating a specific product
-    path('<uuid:pk>/update/', CartListdetails.as_view(), name='cart-update'),
+    path('<uuid:pk>/update/', CartListDetails.as_view(), name='cart-update'),
 
     # URL pattern for deleting a specific product
-    path('<uuid:pk>/delete/', CartListdetails.as_view(), name='cart-delete'),
+    path('<uuid:pk>/delete/', CartListDetails.as_view(), name='cart-delete'),
 ]
 

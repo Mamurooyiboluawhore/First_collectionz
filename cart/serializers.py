@@ -1,6 +1,6 @@
-from rest_framework import serializers
-from accounts.models import Cart, Product
-from products.serializers import ProductSerializer 
+# from rest_framework import serializers
+# from accounts.models import Cart, Product
+# from products.serializers import ProductSerializer 
 
 
 # class CartSerializer(serializers.ModelSerializer):
@@ -35,7 +35,7 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ['id', 'product', 'product_details']
+        fields = ['id', 'product', 'user', 'product_details']
         extra_kwargs = {
             'product': {'write_only': True},
         }
