@@ -66,6 +66,8 @@ class CartSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         product_details = representation.pop('product_details')
+        cart_id = representation.pop('id')
         if product_details:
             representation.update(product_details)
+        representation['cart_id'] = cart_id
         return representation
