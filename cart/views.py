@@ -216,8 +216,8 @@ class CartListDetails(APIView):
             cart.delete()
             response = {
                 "message": "Cart successfully deleted",
-                "status_code": 204,
+                "status_code": status.HTTP_204_NO_CONTENT
             }
-            return Response(response, status=status.HTTP_204_NO_CONTENT)
+            return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
