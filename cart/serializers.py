@@ -28,16 +28,19 @@
     
 
 from rest_framework import serializers
-from accounts.models import Cart, Product
+from .models import Cart
 
 class CartSerializer(serializers.ModelSerializer):
     product_details = serializers.SerializerMethodField()
 
     class Meta:
+        id = serializers.UUIDField(read_only=True, required=False)
         model = Cart
         fields = ['id', 'product', 'user', 'product_details']
+
         extra_kwargs = {
             'product': {'write_only': True},
+            'id' : {'read_only': True},
         }
 
     def get_product_details(self, obj):

@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from products.views import ProductListCreateAPIView, ProductDetailAPIViews
 from search.views import SearchView
 from .views import ValidateOTP, ResendOtpView, UserLoginAPIView, Testemail, PasswordResetAPIView, validate_password_reset_otp
 # from search import SearchView

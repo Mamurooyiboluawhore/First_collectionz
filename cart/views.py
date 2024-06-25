@@ -115,7 +115,8 @@
 
 
 from django.shortcuts import get_object_or_404
-from accounts.models import Cart, Product
+from accounts.models import Product
+from .models import Cart
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
