@@ -150,6 +150,7 @@ class CreateCartApiView(APIView):
                     "cart_id": cart_instance.id, 
                     "data": serializer.data
                 }
+                
                 return Response(response, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
@@ -222,3 +223,27 @@ class CartListDetails(APIView):
             return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+class ProductCart(APIView):
+    def get(self, request, product_id):
+        try:
+            cart_exists = Cart.objects.filter(product_id=product_id, user=request.user).exists()
+            if cart_exists:
+                response = {
+                    'message': True,
+                    'status': status.HTTP_200_OK
+                }
+                return Response(response, status=status.HTTP_200_OK)
+            else:
+                response = {
+                    'message': False,
+                    'status': status.HTTP_200_OK
+                    }
+                return Response(response, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+
