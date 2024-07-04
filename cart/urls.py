@@ -14,6 +14,6 @@ urlpatterns = [
 
     # URL pattern for deleting a specific product
     path('<uuid:pk>/delete/', CartListDetails.as_view(), name='cart-delete'),
-    path('cart/product-in-cart/<int:product_id>/', ProductCart.as_view(), name='product_in_cart'),
+    path('product-in-cart/<uuid:product_id>/', ProductCart.as_view(), name='product_in_cart'),
 ]
 
