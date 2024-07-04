@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CreateCartApiView, ListApiViews, CartListDetails
+from .views import CreateCartApiView, ListApiViews, CartListDetails, ProductCart
 
 urlpatterns = [
     # URL pattern for listing all products and creating new products
@@ -14,5 +14,6 @@ urlpatterns = [
 
     # URL pattern for deleting a specific product
     path('<uuid:pk>/delete/', CartListDetails.as_view(), name='cart-delete'),
+    path('cart/product-in-cart/<int:product_id>/', ProductCart.as_view(), name='product_in_cart'),
 ]
 
