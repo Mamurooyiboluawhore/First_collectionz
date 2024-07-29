@@ -5,7 +5,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from accounts.models import ProductCategory
+from accounts.models import Product
+from products.serializers import ProductSerializer
 from .serializers import CategorySerializer
+
 # Create your views here.
 
 
@@ -77,3 +80,21 @@ class CategoryDetailAPIViews(APIView):
             return Response({'message': 'category deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'error': str(e)}, status=500)
+
+    
+
+class ProductByCategory(APIView):
+    def get(self, request, format=None):
+        try:
+            category = ProductCategory.objects.all()
+            products = Product.objects.filter(category=category)
+            serializer = ProductSerializer(products, many=True)
+            response = {
+                "message": "products by category successfully retrieved",
+                "status_code": 200,
+                "data": serializer.data
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
