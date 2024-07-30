@@ -48,11 +48,6 @@ class CategoryCreateAPIView(APIView):
             return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class CategoryDetailAPIViews(APIView):
-    def get_object(self, pk):
-        try:
-            return ProductCategory.objects.get(pk=pk)
-        except ProductCategory.DoesNotExist:
-            return get_object_or_404(ProductCategory, pk=pk)
     
     def get(self, pk, format=None):
         category = self.get_object(pk)
