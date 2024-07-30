@@ -54,7 +54,7 @@ class CategoryDetailAPIViews(APIView):
         except ProductCategory.DoesNotExist:
             return get_object_or_404(ProductCategory, pk=pk)
     
-    def get(self, request, pk, format=None):
+    def get(self, pk, format=None):
         category = self.get_object(pk)
         serializer = CategorySerializer(category)
         return Response(serializer.data)
