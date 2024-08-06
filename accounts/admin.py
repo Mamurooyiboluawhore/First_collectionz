@@ -2,7 +2,8 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import *
-
+from category.models import ProductCategory
+from reviews.models import ProductReview
 
 class ProductAdmin(admin.ModelAdmin):
     """User profile admin."""

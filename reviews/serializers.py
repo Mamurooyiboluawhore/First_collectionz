@@ -1,6 +1,6 @@
 # serializers.py
 from rest_framework import serializers
-from accounts.models import ProductReview
+from .models import ProductReview
 from accounts.serializers import UserSerializer
 
 class ProductReviewSerializer(serializers.ModelSerializer):
