@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from accounts.models import ProductCategory
+from .models import ProductCategory
 from products.models import Product
 from products.serializers import ProductSerializer
 from .serializers import CategorySerializer
