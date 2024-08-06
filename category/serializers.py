@@ -5,4 +5,4 @@ from accounts.models import ProductCategory
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductCategory
-        fields = '__all__'
+        fields = ['id', 'name']

@@ -11,19 +11,22 @@ from .serializers import (
 	ChangePasswordSerializer,
 	ValidateResetPasswordSerializer,
 	ConfirmPasswordResetSerializer,
-	ResetPasswordEmailSerializer
-	
+	ResetPasswordEmailSerializer,
+    LoginUserSerializer,
+    UserLoginSerializer,
+	ResetPasswordSerializer
 )
 
 from .permissions import IsAccountOwner
-from .sendmail import send_plain_text_email
+from .sendmail import send_plain_text_email, Send_email_with_zoho_server
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import authenticate
 from django.utils import timezone
-from datetime import timezone
+# from datetime import timezone
+
 
 User = get_user_model()
 
@@ -37,8 +40,7 @@ class ValidateOTP(APIView):
         except User.DoesNotExist:
             return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
-        print(user.otp)  # Print the OTP for debugging purposes
-
+        print(user.otp)
         if user.otp == otp:
             # check if token has expired
             time_difference = max(user.created_at, user.updated_at)
@@ -53,6 +55,7 @@ class ValidateOTP(APIView):
                 }
                 return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
+            user.otp_verified = True  # Mark OTP as verified
             user.otp = None
             user.save()
 
@@ -68,8 +71,14 @@ class ValidateOTP(APIView):
 
 class ResendOtpView(APIView):
       def patch(self, request):
-            """Resends a new OTP to the registered Email ID"""
-            email = request.query_params.get('email')
+            """Resends a new OTP to the registered Email ID
+                Payload:
+                    {
+                        "email": "user@example.com"
+                    }
+            """
+            
+            email = request.data.get('email')
             try:
                   user = User.objects.get(email=email)
 
@@ -80,13 +89,13 @@ class ResendOtpView(APIView):
                   return Response(response, status=status.HTTP_404_NOT_FOUND)
             if user.otp is None:
                   response = {
-                        'message': "Ypur account already verified"
+                        'message': "Your account already verified"
                   }
                   return Response(response, status=status.HTTP_400_BAD_REQUEST)
             otp = generate_otp()
             user.otp=otp
             user.save()
-            send_plain_text_email(message=otp, to_email=email, subject="this is your new otp")
+            Send_email_with_zoho_server(message=otp, to_email=email)
             
 
             response ={
@@ -109,9 +118,9 @@ class UserCreateAPIView(generics.CreateAPIView):
             otp = generate_otp()
             user.otp = otp
             user.save()
-            send_otp_email(user.email, otp)
-            send_plain_text_email(
-                subject='OTP for Account Verification',
+            # send_otp_email(user.email, otp)
+            Send_email_with_zoho_server(
+                # subject='OTP for Account Verification',
                 to_email=user.email,
                 message=f'Your OTP for account verification is: {otp}'
             )
@@ -136,51 +145,77 @@ class UserCreateAPIView(generics.CreateAPIView):
 
 user_create = UserCreateAPIView.as_view()
 
+
 class UserLoginAPIView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        email = request.data.get('email', '')
+        serializer = UserLoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
 
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(user)
         except User.DoesNotExist:
             return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
-
-        # Authenticate the user
-        user = authenticate(request, email=email)
-        if user:
+        
+        try:
+            if user.otp_verified:
             # Generate tokens
-            refresh = RefreshToken.for_user(user)
-            access_token = str(refresh.access_token)
-            response_data = {
-                  'user': {
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+                response_data = {
+                    'user': {
+                        'id': user.id,
+                        'username': user.full_name,
+                        'message': 'You are logged in' 
+                    },
+                    'tokens': {
+                        'refresh': str(refresh),
+                        'access': access_token,
+                    }
+                }
+                response = Response(response_data, status=status.HTTP_200_OK)
+                return response
+            else:
+                return Response({'error': 'OTP not verified. Please verify OTP first.'}, status=status.HTTP_401_UNAUTHORIZED)
+        except ValidationError as e:
+                return Response({'error': str(e.detail)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': f'Unexpected error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UserLoginAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = UserLoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+
+        
+        try:
+            if user.otp_verified:
+            # Generate tokens
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+                response_data = {
+                    'user': {
                         'id': user.id,
                         'username': user.username,
-                },
-                'tokens': {
-                    'refresh': str(refresh),
-                    'access': access_token,
-                }
-            }
-            response = Response(response_data, status=status.HTTP_200_OK)
-            #response.set_cookie(key='access_token', value=access_token, httponly=True)
-            return response
-        else:
-            return Response({'error': 'Authentication failed.'}, status=status.HTTP_401_UNAUTHORIZED)
-        # Return response with token information
-        return Response({
-            'user': {
-                'id': user.id,
-                'username': user.username,
-                },
-                'tokens': {
-                    'refresh': str(refresh),
-                    'access': access_token,
+                        'message': 'You are logged in' 
+                    },
+                    'tokens': {
+                        'refresh': str(refresh),
+                        'access': access_token,
                     }
-                    })
-    
-
+            }
+                response = Response(response_data, status=status.HTTP_200_OK)
+                return response
+            else:
+                return Response({'error': 'OTP not verified. Please verify OTP first.'}, status=status.HTTP_401_UNAUTHORIZED)
+        except AttributeError:
+            return Response({'error': 'OTP not verified. Please verify OTP first.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -245,7 +280,7 @@ class PasswordResetAPIView(generics.GenericAPIView):
 		user.otp = otp
 		user.save()
 
-		send_otp_email(email, otp)
+		SyntaxError(email, otp)
 
 		return Response({
 			'message': 'OTP has been sent to your email',
@@ -254,7 +289,7 @@ class PasswordResetAPIView(generics.GenericAPIView):
 
 password_reset = PasswordResetAPIView.as_view()
 
-class ValidatePasswordResetOTPAPIView(generics.GenericAPIView):
+class ValidatePasswordResetOTPAPIView(APIView):
 	serializer_class = ValidateResetPasswordSerializer
 
 	def post(self, request, *args, **kwargs):
@@ -312,4 +347,70 @@ class ConfirmPasswordResetAPIView(generics.GenericAPIView):
 		}, status=status.HTTP_400_BAD_REQUEST)
 
 confirm_password_reset = ConfirmPasswordResetAPIView.as_view()
+
+class ValidatePasswordResetOTPAPIView(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        if 'otp' in request.data and 'new_password' in request.data:
+            serializer_class = ResetPasswordSerializer
+        else:
+            serializer_class = ValidateResetPasswordSerializer
+        
+        serializer = serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data.get('email', '')
+        otp = serializer.validated_data.get('otp', None)
+        new_password = serializer.validated_data.get('new_password', None)
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            if otp and new_password:
+                # Resetting password
+                if user.otp == otp:
+                    user.set_password(new_password)
+                    user.otp = None  # Clear OTP after successful password reset
+                    user.save()
+                    return Response({
+                        'message': 'Password has been reset successfully.',
+                        'status': status.HTTP_200_OK
+                    }, status=status.HTTP_200_OK)
+                else:
+                    return Response({
+                        'error': 'Invalid OTP',
+                        'status': status.HTTP_400_BAD_REQUEST
+                    }, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                # Generating and sending OTP
+                otp = generate_otp()
+                user.otp = otp
+                user.save()
+
+                Send_email_with_zoho_server(
+                    to_email=user.email,
+                    message=f'Your OTP for password reset is: {otp}'
+                )
+
+                return Response({
+                    'message': 'OTP has been sent to your email.',
+                    'status': status.HTTP_201_CREATED
+                }, status=status.HTTP_201_CREATED)
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': 'An unexpected error occurred: ' + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+validate_password_reset_otp = ValidatePasswordResetOTPAPIView.as_view()
+
+class Testemail(APIView):
+      def get(self, request):
+            Send_email_with_zoho_server()
+            response = {
+                  'message': 'email sent',
+                  'status': 200
+            }
+            return Response(response, status=status.HTTP_200_OK)
 

@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from accounts.models import Order, OrderItems, Cart
+from accounts.models import Order, OrderItems
+from cart.models import Cart
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
