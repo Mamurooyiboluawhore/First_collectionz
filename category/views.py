@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from accounts.models import ProductCategory
-from accounts.models import Product
+from products.models import Product
 from products.serializers import ProductSerializer
 from .serializers import CategorySerializer
 

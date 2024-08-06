@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
+from products.models import Product
 import uuid
 
 
@@ -53,38 +54,10 @@ class User(AbstractUser):
         return self.email
 
 
-	
-
-
-
-class ChatMessages(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user' )
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender' )
-    reciever = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reciever' )
-    messasge = models.CharField(max_length=700,)
-    is_read =models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
-     
-    class Meta:
-        ordering = ['-created_at']  # Message shown in descending order by default
-        verbose_name_plural = 'Messages'
-
-        def __str__(self) -> str:
-            return f"Message from {self.sender} to {self.reciever}"
-        
-        # @property
-        # def sender_profile(self):
-        #     if User.objects.filter(id=self.sender_id).exists():
-        #         return User.objects.get(id=self.sender_id).profile
-                
-
-
-        # db_table = 'ChatMessages'
 
 class Complaint(models.Model):
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    product = models.ForeignKey('Product', models.DO_NOTHING, blank=True, null=True)
+    product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
     complaint_text = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=225, blank=True, null=True)
     created_at = models.DateTimeField(auto_now=True)
@@ -115,7 +88,7 @@ class Coupon(models.Model):
 
 
 class Favourite(models.Model):
-    product = models.ForeignKey('Product', models.DO_NOTHING, blank=True, null=True)
+    product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
@@ -187,7 +160,7 @@ class Order(models.Model):
 
 
 class OrderItems(models.Model):
-    product = models.ForeignKey('Product', models.DO_NOTHING, blank=True, null=True)
+    product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     promo = models.ForeignKey('Promotion', models.DO_NOTHING, blank=True, null=True)
     created_at = models.DateTimeField(auto_now=True)
@@ -210,29 +183,7 @@ class Payment(models.Model):
         db_table = 'payment'
 
 
-class Product(models.Model):
-    id = models.UUIDField(primary_key=True)
-    name = models.CharField(max_length=300)
-    description = models.CharField(max_length=500)
-    quantity = models.BigIntegerField()
-    category = models.ForeignKey('ProductCategory', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    price = models.DecimalField(max_digits=15, decimal_places=2)
-    discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    admin_status = models.TextField(blank=True, null=True)
-    is_deleted = models.TextField(blank=True, null=True)
-    rating = models.ForeignKey('UserProductRating', models.DO_NOTHING, blank=True, null=True)
-    is_published = models.BooleanField()
-    currency = models.CharField(max_length=10)
-    created_at = models.DateTimeField(auto_now=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
-    sub_category = models.ForeignKey('ProductSubCategory', models.DO_NOTHING, blank=True, null=True)
-    image = models.ImageField(upload_to='product_images/', null=False, blank=True)
-    size = models.CharField(max_length=100, null=True, blank=True)
-    colours = models.CharField(max_length=100, null=True, blank=True)
 
-    class Meta:
-        db_table = 'product'
 
 
 class ProductCategory(models.Model):
@@ -253,7 +204,7 @@ class ProductSubCategory(models.Model):
 
 
 class ProductReview(models.Model):
-    product = models.ForeignKey('Product', models.DO_NOTHING, blank=True, null=True)
+    product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     reply = models.ForeignKey('self', models.DO_NOTHING, blank=True, null=True)
@@ -282,7 +233,7 @@ class Promotion(models.Model):
     discount_type = models.TextField(blank=True, null=True)  # This field type is a guess.
     quantity = models.BigIntegerField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    product = models.ForeignKey('Product', models.DO_NOTHING, blank=True, null=True)
+    product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
     valid_from = models.DateTimeField()
     valid_to = models.DateTimeField()
     maximum_discount_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -300,11 +251,3 @@ class UserProductRating(models.Model):
         db_table = 'user_product_rating'
 
 
-class Wishlist(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
-    class Meta:
-        db_table = 'wishlist'
