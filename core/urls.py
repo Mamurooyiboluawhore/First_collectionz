@@ -5,7 +5,7 @@ from rest_framework_swagger.views import get_swagger_view
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
-from products.views import ProductListCreateAPIView, ProductDetailAPIViews
+from products.views import ProductListCreateAPIView, ProductDetailAPIView
 from search.views import SearchView
 from django.conf.urls.static import static
 from django.conf import settings
