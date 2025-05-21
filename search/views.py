@@ -5,8 +5,7 @@ from products.models import Product
 from products.serializers import ProductSerializer
 
 class SearchView(APIView):
-    serializer_class = ProductSerializer  # Use serializer_class instead of serializer
-
+    serializer_class = ProductSerializer
     def get(self, request, *args, **kwargs):
         query = request.GET.get('q', '')
         products = Product.objects.filter(name__icontains=query).order_by('-createdat')

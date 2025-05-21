@@ -1,17 +1,13 @@
 from django.urls import path
-from .views import ProductListCreateAPIView, ProductDetailAPIViews
+from .views import ProductListCreateAPIView, ProductDetailAPIView
 
 urlpatterns = [
-    # URL pattern for listing all products and creating new products
+    # URL for listing all products or retrieving a single product
     path('', ProductListCreateAPIView.as_view(), name='product-list-create'),
+    path('<uuid:pk>/', ProductListCreateAPIView.as_view(), name='product-detail'),
 
-    # URL pattern for retrieving, updating, and deleting a specific product
-    path('<uuid:pk>/', ProductDetailAPIViews.as_view(), name='product-detail'),
-
-    # URL pattern for updating a specific product
-    path('<uuid:pk>/update/', ProductDetailAPIViews.as_view(), name='product-update'),
-
-    # URL pattern for deleting a specific product
-    path('<uuid:pk>/delete/', ProductDetailAPIViews.as_view(), name='product-delete'),
+    # URL pattern for creating, updating, and deleting a specific product
+    path('create/', ProductDetailAPIView.as_view(), name='product-create'),
+    path('<uuid:pk>/update/', ProductDetailAPIView.as_view(), name='product-update'),
+    path('<uuid:pk>/delete/', ProductDetailAPIView.as_view(), name='product-delete'),
 ]
-
