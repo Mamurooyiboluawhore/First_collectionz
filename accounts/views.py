@@ -202,7 +202,8 @@ class UserLoginAPIView(APIView):
                 response_data = {
                     'user': {
                         'id': user.id,
-                        'username': user.username,
+                        'full_name': user.full_name,
+                        'email': user.email,
                         'message': 'You are logged in' 
                     },
                     'tokens': {
@@ -264,29 +265,26 @@ class ChangePasswordAPIView(generics.GenericAPIView):
 
 change_password = ChangePasswordAPIView.as_view()
 
-
 class PasswordResetAPIView(generics.GenericAPIView):
-	serializer_class = ResetPasswordEmailSerializer
+    serializer_class = ResetPasswordEmailSerializer
 
-	def post(self, request, *args, **kwargs):
-		serializer = self.get_serializer(data=request.data)
-		serializer.is_valid(raise_exception=True)
-		email = serializer.validated_data.get('email', '')
-		try:
-			user = User.objects.get(email=email)
-		except:
-			return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
-		otp = generate_otp()
-		user.otp = otp
-		user.save()
-
-		SyntaxError(email, otp)
-
-		return Response({
-			'message': 'OTP has been sent to your email',
-			'status': status.HTTP_200_OK
-		}, status=status.HTTP_200_OK)
-
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data.get('email', '')
+        try:
+            user = User.objects.get(email=email)
+        except:
+            return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+        otp = generate_otp()
+        user.otp = otp
+        user.save()
+        Send_email_with_zoho_server(
+            # subject='OTP for Account Verification',
+            to_email=user.email,
+            message=f'Your OTP for password reset is: {otp}'
+        )
+        return Response({'message': 'OTP has been sent to your email', 'status': status.HTTP_200_OK}, status=status.HTTP_200_OK)
 password_reset = PasswordResetAPIView.as_view()
 
 class ValidatePasswordResetOTPAPIView(APIView):
